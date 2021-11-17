@@ -70,6 +70,13 @@ func (s *Wrapper) OnEvent(nsp, event string, f func(echo.Context, socketio.Conn,
 	})
 }
 
+// On Socket.io event from client
+func (s *Wrapper) OnEventAndReturn(nsp, event string, f func(echo.Context, socketio.Conn, string) string) {
+	s.Server.OnEvent(nsp, event, func(conn socketio.Conn, msg string) string {
+		return f(s.Context, conn, msg)
+	})
+}
+
 // Handler function
 func (s *Wrapper) HandlerFunc(context echo.Context) error {
 	go s.Server.Serve()
