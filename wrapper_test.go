@@ -18,10 +18,9 @@ func TestNewWrapper(t *testing.T) {
 }
 
 func TestNewWrapperWithServer(t *testing.T) {
-	socketioServer, err := socketio.NewServer(nil)
+	socketioServer := socketio.NewServer(nil)
 
 	assert.NotNil(t, socketioServer)
-	assert.Nil(t, err)
 
 	wrapper, err := echo_socket_io.NewWrapperWithServer(socketioServer)
 
@@ -58,7 +57,7 @@ func TestWrapper_OnError(t *testing.T) {
 	assert.NotNil(t, wrapper)
 	assert.Nil(t, err)
 
-	wrapper.OnError("", func(context echo.Context, e error) {
+	wrapper.OnError("", func(context echo.Context, conn socketio.Conn, e error) {
 
 	})
 }

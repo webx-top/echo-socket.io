@@ -29,7 +29,7 @@ func socketIOWrapper() func(context echo.Context) error {
 		fmt.Println("connected:", conn.ID())
 		return nil
 	})
-	wrapper.OnError("", func(context echo.Context, e error) {
+	wrapper.OnError("", func(context echo.Context, conn socketio.Conn, e error) {
 		fmt.Println("meet error:", e)
 	})
 	wrapper.OnDisconnect("", func(context echo.Context, conn socketio.Conn, msg string) {

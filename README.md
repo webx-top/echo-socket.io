@@ -10,13 +10,13 @@
 Install the package with:
 
 ```bash
-go get -u github.com/umirode/echo-socket.io
+go get -u github.com/webx-top/echo-socket.io
 ```
 
 Import it with:
 
 ```go
-import esi "github.com/umirode/echo-socket.io"
+import esi "github.com/webx-top/echo-socket.io"
 ```
 
 and use `esi` inside your code.
@@ -29,8 +29,9 @@ package main
 import (
 	"fmt"
 	socketio "github.com/googollee/go-socket.io"
-	"github.com/labstack/echo/v4"
-	esi "github.com/umirode/echo-socket.io"
+	"github.com/webx-top/echo"
+	"github.com/webx-top/echo/engine/standard"
+	esi "github.com/webx-top/echo-socket.io"
 )
 
 func main() {
@@ -38,7 +39,7 @@ func main() {
 
 	e.Any("/socket.io/", socketIOWrapper())
 
-	e.Logger.Fatal(e.Start(":8080"))
+	e.Logger().Fatal(e.Run(standard.New(":8080")))
 }
 
 func socketIOWrapper() func(context echo.Context) error {
@@ -53,7 +54,7 @@ func socketIOWrapper() func(context echo.Context) error {
 		fmt.Println("connected:", conn.ID())
 		return nil
 	})
-	wrapper.OnError("", func(context echo.Context, e error) {
+	wrapper.OnError("", func(context echo.Context conn socketio.Conn, e error) {
 		fmt.Println("meet error:", e)
 	})
 	wrapper.OnDisconnect("", func(context echo.Context, conn socketio.Conn, msg string) {
