@@ -2,9 +2,10 @@ package echo_socket_io
 
 import (
 	"errors"
+
 	engineio "github.com/googollee/go-engine.io"
 	socketio "github.com/googollee/go-socket.io"
-	"github.com/labstack/echo/v4"
+	"github.com/webx-top/echo"
 )
 
 // Socket.io wrapper interface
@@ -77,6 +78,6 @@ func (s *Wrapper) HandlerFunc(context echo.Context) error {
 	go s.Server.Serve()
 
 	s.Context = context
-	s.Server.ServeHTTP(context.Response(), context.Request())
+	s.Server.ServeHTTP(context.Response().StdResponseWriter(), context.Request().StdRequest())
 	return nil
 }
