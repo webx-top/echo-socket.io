@@ -1,6 +1,6 @@
 module github.com/webx-top/echo-socket.io
 
-go 1.13
+go 1.16
 
 require (
 	github.com/admpub/copier v0.0.2 // indirect

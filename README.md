@@ -50,7 +50,7 @@ func socketIOWrapper() func(context echo.Context) error {
 	}
 
 	wrapper.OnConnect("", func(context echo.Context, conn socketio.Conn) error {
-		conn.SetContext("")
+		context.Set("myDataName","myDataValue")
 		fmt.Println("connected:", conn.ID())
 		return nil
 	})
@@ -62,7 +62,7 @@ func socketIOWrapper() func(context echo.Context) error {
 	})
 
 	wrapper.OnEvent("", "test", func(context echo.Context, conn socketio.Conn, msg string) {
-		conn.SetContext(msg)
+		context.Set("myDataName","myDataValue")
 		fmt.Println("notice:", msg)
 		conn.Emit("test", msg)
 	})
