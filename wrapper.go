@@ -31,7 +31,7 @@ type Wrapper struct {
 }
 
 // Create wrapper and Socket.io server
-func NewWrapper(options *engineio.Options) (*Wrapper, error) {
+func NewWrapper(options *engineio.Options) *Wrapper {
 	if options == nil {
 		options = &engineio.Options{
 			ConnInitor: ConnInitor,
@@ -51,7 +51,7 @@ func NewWrapper(options *engineio.Options) (*Wrapper, error) {
 
 	return &Wrapper{
 		Server: server,
-	}, nil
+	}
 }
 
 // Create wrapper with exists Socket.io server

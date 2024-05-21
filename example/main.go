@@ -31,11 +31,7 @@ func main() {
 }
 
 func socketIOWrapper() *esi.Wrapper {
-	wrapper, err := esi.NewWrapper(nil)
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil
-	}
+	wrapper := esi.NewWrapper(nil)
 
 	wrapper.OnConnect("", func(context echo.Context, conn socketio.Conn) error {
 		fmt.Println(`[`, time.Now().Format(param.DateTimeNormal), `]`, "connected:", conn.ID())

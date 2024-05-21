@@ -10,16 +10,13 @@ import (
 )
 
 func TestNewWrapper(t *testing.T) {
-	wrapper, err := echo_socket_io.NewWrapper(nil)
-
+	wrapper := echo_socket_io.NewWrapper(nil)
 	assert.NotNil(t, wrapper)
-	assert.Nil(t, err)
 	assert.Implements(t, (*echo_socket_io.IWrapper)(nil), wrapper)
 }
 
 func TestNewWrapperWithServer(t *testing.T) {
 	socketioServer := socketio.NewServer(nil)
-
 	assert.NotNil(t, socketioServer)
 
 	wrapper, err := echo_socket_io.NewWrapperWithServer(socketioServer)
@@ -30,10 +27,8 @@ func TestNewWrapperWithServer(t *testing.T) {
 }
 
 func TestWrapper_OnConnect(t *testing.T) {
-	wrapper, err := echo_socket_io.NewWrapper(nil)
-
+	wrapper := echo_socket_io.NewWrapper(nil)
 	assert.NotNil(t, wrapper)
-	assert.Nil(t, err)
 
 	wrapper.OnConnect("", func(context echo.Context, conn socketio.Conn) error {
 		return nil
@@ -41,10 +36,8 @@ func TestWrapper_OnConnect(t *testing.T) {
 }
 
 func TestWrapper_OnDisconnect(t *testing.T) {
-	wrapper, err := echo_socket_io.NewWrapper(nil)
-
+	wrapper := echo_socket_io.NewWrapper(nil)
 	assert.NotNil(t, wrapper)
-	assert.Nil(t, err)
 
 	wrapper.OnDisconnect("", func(context echo.Context, conn socketio.Conn, s string) {
 
@@ -52,10 +45,8 @@ func TestWrapper_OnDisconnect(t *testing.T) {
 }
 
 func TestWrapper_OnError(t *testing.T) {
-	wrapper, err := echo_socket_io.NewWrapper(nil)
-
+	wrapper := echo_socket_io.NewWrapper(nil)
 	assert.NotNil(t, wrapper)
-	assert.Nil(t, err)
 
 	wrapper.OnError("", func(context echo.Context, conn socketio.Conn, e error) {
 
@@ -63,10 +54,8 @@ func TestWrapper_OnError(t *testing.T) {
 }
 
 func TestWrapper_OnEvent(t *testing.T) {
-	wrapper, err := echo_socket_io.NewWrapper(nil)
-
+	wrapper := echo_socket_io.NewWrapper(nil)
 	assert.NotNil(t, wrapper)
-	assert.Nil(t, err)
 
 	wrapper.OnEvent("", "", func(echo.Context, socketio.Conn, string) {
 

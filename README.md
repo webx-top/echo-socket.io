@@ -37,17 +37,17 @@ import (
 func main() {
 	e := echo.New()
 
-	e.Any("/socket.io/", socketIOWrapper())
+	w := socketIOWrapper()
+	w.Serve()
+	defer w.Close()
+
+	e.Any("/socket.io/", w)
 
 	e.Logger().Fatal(e.Run(standard.New(":8080")))
 }
 
-func socketIOWrapper() func(context echo.Context) error {
-	wrapper, err := esi.NewWrapper(nil)
-	if err != nil {
-		fmt.Println(err.Error())
-		return nil
-	}
+func socketIOWrapper() *esi.Wrapper {
+	wrapper := esi.NewWrapper(nil)
 
 	wrapper.OnConnect("", func(context echo.Context, conn socketio.Conn) error {
 		context.Set("myDataName","myDataValue")
@@ -67,7 +67,7 @@ func socketIOWrapper() func(context echo.Context) error {
 		conn.Emit("test", msg)
 	})
 
-	return wrapper.HandlerFunc
+	return wrapper
 }
 ```
 
