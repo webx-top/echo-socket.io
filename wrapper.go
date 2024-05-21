@@ -117,7 +117,13 @@ func (s *Wrapper) OnEventAndReturn(nsp, event string, f func(echo.Context, socke
 
 // Handler function
 func (s *Wrapper) HandlerFunc(context echo.Context) error {
-	go s.Server.Serve()
+	logger := context.Logger()
+	go func() {
+		err := s.Server.Serve()
+		if err != nil {
+			logger.Error(err)
+		}
+	}()
 
 	s.Server.ServeHTTP(context.Response().StdResponseWriter(), context.Request().StdRequest().WithContext(echo.AsStdContext(context)))
 	return nil

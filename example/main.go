@@ -36,8 +36,7 @@ func socketIOWrapper() func(context echo.Context) error {
 	}
 
 	wrapper.OnConnect("", func(context echo.Context, conn socketio.Conn) error {
-		context.Set(`test`, time.Now())
-		fmt.Println(`[`, context.Get(`test`).(time.Time).Format(param.DateTimeNormal), `]`, "connected:", conn.ID())
+		fmt.Println(`[`, time.Now().Format(param.DateTimeNormal), `]`, "connected:", conn.ID())
 		return nil
 	})
 	wrapper.OnError("", func(context echo.Context, conn socketio.Conn, e error) {
@@ -48,7 +47,7 @@ func socketIOWrapper() func(context echo.Context) error {
 	})
 
 	wrapper.OnEvent("", "test", func(context echo.Context, conn socketio.Conn, msg string) {
-		fmt.Println(`[`, context.Get(`test`).(time.Time).Format(param.DateTimeNormal), `]`, "notice:", msg)
+		fmt.Println(`[`, time.Now().Format(param.DateTimeNormal), `]`, "notice:", msg)
 		b, _ := json.MarshalIndent(context.Forms(), ``, `	`)
 		fmt.Println("formData:", string(b))
 		conn.Emit("test", msg) // reply message. "test" channel
