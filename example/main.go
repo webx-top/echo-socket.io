@@ -19,8 +19,10 @@ var html []byte
 
 func main() {
 	e := echo.New()
-
-	e.Any("/socket.io/", socketIOWrapper())
+	w := socketIOWrapper()
+	w.Serve()
+	defer w.Close()
+	e.Any("/socket.io/", w)
 	e.Get("/", func(c echo.Context) error {
 		return c.HTML(engine.Bytes2str(html))
 	})
@@ -28,7 +30,7 @@ func main() {
 	e.Logger().Fatal(e.Run(standard.New(":4444")))
 }
 
-func socketIOWrapper() func(context echo.Context) error {
+func socketIOWrapper() *esi.Wrapper {
 	wrapper, err := esi.NewWrapper(nil)
 	if err != nil {
 		fmt.Println(err.Error())
@@ -53,5 +55,5 @@ func socketIOWrapper() func(context echo.Context) error {
 		conn.Emit("test", msg) // reply message. "test" channel
 	})
 
-	return wrapper.HandlerFunc
+	return wrapper
 }

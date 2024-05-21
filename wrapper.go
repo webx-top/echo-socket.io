@@ -3,6 +3,7 @@ package echo_socket_io
 import (
 	"net/http"
 
+	"github.com/admpub/log"
 	socketio "github.com/googollee/go-socket.io"
 	"github.com/googollee/go-socket.io/engineio"
 	"github.com/webx-top/echo"
@@ -116,15 +117,23 @@ func (s *Wrapper) OnEventAndReturn(nsp, event string, f func(echo.Context, socke
 }
 
 // Handler function
-func (s *Wrapper) HandlerFunc(context echo.Context) error {
-	logger := context.Logger()
+func (s *Wrapper) Handle(context echo.Context) error {
+	s.Server.ServeHTTP(context.Response().StdResponseWriter(), context.Request().StdRequest().WithContext(echo.AsStdContext(context)))
+	return nil
+}
+
+func (s *Wrapper) Serve() {
 	go func() {
 		err := s.Server.Serve()
 		if err != nil {
-			logger.Error(err)
+			log.Errorf(`socket.io: %s`, err.Error())
 		}
 	}()
+}
 
-	s.Server.ServeHTTP(context.Response().StdResponseWriter(), context.Request().StdRequest().WithContext(echo.AsStdContext(context)))
-	return nil
+func (s *Wrapper) Close() {
+	err := s.Server.Close()
+	if err != nil {
+		log.Errorf(`socket.io: %s`, err.Error())
+	}
 }
