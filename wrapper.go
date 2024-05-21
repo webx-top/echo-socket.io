@@ -1,7 +1,6 @@
 package echo_socket_io
 
 import (
-	"errors"
 	"net/http"
 
 	socketio "github.com/googollee/go-socket.io"
@@ -19,7 +18,7 @@ type IWrapper interface {
 }
 
 func ConnInitor(r *http.Request, c engineio.Conn) {
-	c.SetContext(r.Context().(echo.Context))
+	c.SetContext(getContextByStd(r.Context()))
 }
 
 type Wrapper struct {
@@ -53,7 +52,7 @@ func NewWrapper(options *engineio.Options) (*Wrapper, error) {
 // Create wrapper with exists Socket.io server
 func NewWrapperWithServer(server *socketio.Server) (*Wrapper, error) {
 	if server == nil {
-		return nil, errors.New("socket.io server can not be nil")
+		return nil, ErrServerCannotBeNil
 	}
 
 	return &Wrapper{
@@ -64,35 +63,55 @@ func NewWrapperWithServer(server *socketio.Server) (*Wrapper, error) {
 // On Socket.io client connect
 func (s *Wrapper) OnConnect(nsp string, f func(echo.Context, socketio.Conn) error) {
 	s.Server.OnConnect(nsp, func(conn socketio.Conn) error {
-		return f(conn.Context().(echo.Context), conn)
+		ctx := getContext(conn)
+		if ctx == nil {
+			return ErrContextCannotBeNil
+		}
+		return f(ctx, conn)
 	})
 }
 
 // On Socket.io client disconnect
 func (s *Wrapper) OnDisconnect(nsp string, f func(echo.Context, socketio.Conn, string)) {
 	s.Server.OnDisconnect(nsp, func(conn socketio.Conn, msg string) {
-		f(conn.Context().(echo.Context), conn, msg)
+		ctx := getContext(conn)
+		if ctx == nil {
+			return
+		}
+		f(ctx, conn, msg)
 	})
 }
 
 // On Socket.io error
 func (s *Wrapper) OnError(nsp string, f func(echo.Context, socketio.Conn, error)) {
 	s.Server.OnError(nsp, func(conn socketio.Conn, err error) {
-		f(conn.Context().(echo.Context), conn, err)
+		ctx := getContext(conn)
+		if ctx == nil {
+			return
+		}
+		f(ctx, conn, err)
 	})
 }
 
 // On Socket.io event from client
 func (s *Wrapper) OnEvent(nsp, event string, f func(echo.Context, socketio.Conn, string)) {
 	s.Server.OnEvent(nsp, event, func(conn socketio.Conn, msg string) {
-		f(conn.Context().(echo.Context), conn, msg)
+		ctx := getContext(conn)
+		if ctx == nil {
+			return
+		}
+		f(ctx, conn, msg)
 	})
 }
 
 // On Socket.io event from client
 func (s *Wrapper) OnEventAndReturn(nsp, event string, f func(echo.Context, socketio.Conn, string) string) {
 	s.Server.OnEvent(nsp, event, func(conn socketio.Conn, msg string) string {
-		return f(conn.Context().(echo.Context), conn, msg)
+		ctx := getContext(conn)
+		if ctx == nil {
+			return ErrContextCannotBeNil.Error()
+		}
+		return f(ctx, conn, msg)
 	})
 }
 
@@ -100,6 +119,6 @@ func (s *Wrapper) OnEventAndReturn(nsp, event string, f func(echo.Context, socke
 func (s *Wrapper) HandlerFunc(context echo.Context) error {
 	go s.Server.Serve()
 
-	s.Server.ServeHTTP(context.Response().StdResponseWriter(), context.Request().StdRequest().WithContext(context))
+	s.Server.ServeHTTP(context.Response().StdResponseWriter(), context.Request().StdRequest().WithContext(echo.AsStdContext(context)))
 	return nil
 }
