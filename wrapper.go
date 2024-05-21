@@ -15,8 +15,12 @@ type IWrapper interface {
 	OnDisconnect(nsp string, f func(echo.Context, socketio.Conn, string))
 	OnError(nsp string, f func(echo.Context, socketio.Conn, error))
 	OnEvent(nsp, event string, f func(echo.Context, socketio.Conn, string))
-	HandlerFunc(context echo.Context) error
+	Serve()
+	Close()
+	echo.Handler
 }
+
+var _ IWrapper = (*Wrapper)(nil)
 
 func ConnInitor(r *http.Request, c engineio.Conn) {
 	c.SetContext(getContextByStd(r.Context()))
