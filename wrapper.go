@@ -92,6 +92,7 @@ func (s *Wrapper) OnError(nsp string, f func(echo.Context, socketio.Conn, error)
 	s.Server.OnError(nsp, func(conn socketio.Conn, err error) {
 		ctx := getContext(conn)
 		if ctx == nil {
+			log.Error(err)
 			return
 		}
 		f(ctx, conn, err)

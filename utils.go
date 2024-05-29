@@ -8,6 +8,9 @@ import (
 )
 
 func getContext(conn socketio.Conn) echo.Context {
+	if conn == nil {
+		return nil
+	}
 	ctx := conn.Context()
 	if ctx == nil {
 		return nil
